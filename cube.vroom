@@ -1,0 +1,49 @@
+#!/usr/bin/env vroom-wrapper
+#
+# Example vroom application that uses the communicate function to interact with
+# a processing program (VroomDemo). When the program receives a message with a
+# valid color value (see below) the color of the cube will change.
+#
+# To run the demo:
+#
+# 1.) Start processing and open the VroomDemo example program. Run the
+# program, you should see a window with three squares.
+#
+# 2.) Run this application, you should see a cube in the center of the screen.
+# When the squares in the proccesing app are clicked a message should be sent
+# to the vroom app and the color of the cube should update.
+#
+
+from vroom import *
+
+# Valid color values
+colors = { 'red': red, 'green': green, 'blue': blue, 'white': white }
+
+# vroom functions
+
+def init():
+   # Set the initial color value.
+   Global.color = white
+
+def display():
+   # Enable lighting and set the material property to the current color value.
+   lighting(True)
+   material(Global.color)
+   # Draw a solid cube.
+   draw(cube, 4.0, style='solid').at([-2.0, -2.0, -2.0])
+   
+def communicate(message):
+   # Process datastream messages.
+   #
+   # Messages sent using the DataStream class in processing will be received in
+   # this function. In this example we are expecting color values. If a valid 
+   # color is received the global color value will be updated.
+   print("[communicate] message={}".format(message))
+
+   try:
+      Global.color = colors[message]
+      print("  -- setting color value to {}".format(message))
+   except KeyError:
+      print("  -- ivalid color value ({})".format(message))
+      Global.color = white
+
